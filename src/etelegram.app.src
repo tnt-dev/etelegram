@@ -1,0 +1,7 @@
+{application, etelegram,
+ [{description, "An Erlang wrapper around the Telegram Bot API"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications, [kernel, stdlib, hackney]},
+  {mod, {etelegram, []}},
+  {env, []}]}.

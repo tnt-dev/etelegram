@@ -1,0 +1,5 @@
+%% encoding: UTF-8
+{application,etelegram}.
+{packages,[]}.
+{modules,[etelegram,etelegram_http,etelegram_json,etelegram_records,
+          etelegram_sup,etelegram_utils]}.
