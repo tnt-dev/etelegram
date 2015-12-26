@@ -1,5 +1,9 @@
 # etelegram
 
+[![Build Status][travis-img]][travis]
+
+[travis]: https://travis-ci.org/tnt-dev/etelegram
+[travis-img]: https://travis-ci.org/tnt-dev/etelegram.svg
 
 An Erlang wrapper around the
 [Telegram Bot API](https://core.telegram.org/bots/api).
