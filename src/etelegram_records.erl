@@ -19,17 +19,21 @@
                  etelegram_reply_keyboard_markup,
                  etelegram_reply_keyboard_hide,
                  etelegram_force_reply,
+                 etelegram_inline_query,
+                 etelegram_inline_query_result_article,
+                 etelegram_inline_query_result_photo,
+                 etelegram_inline_query_result_gif,
+                 etelegram_inline_query_result_mpeg4_gif,
+                 etelegram_inline_query_result_video,
+                 etelegram_chosen_inline_result,
                  etelegram_update,
                  etelegram_error]).
 
 -export([parse/2, to_json/1]).
 
 parse(_Type, undefined) -> undefined;
-parse(Type, [[_|_]|_]=List) ->
-    [parse(Type, Props) || Props <- List];
 parse(Type, Props) when is_list(Props) ->
-    Rec = '#new-'(Type),
-    improve('#fromlist-'(Props, Rec)).
+    improve('#fromlist-'(Props, '#new-'(Type))).
 
 to_json(Rec) when is_tuple(Rec) ->
     [{K, to_json(V)} || {K, V} <- to_list(Rec), V =/= undefined];
@@ -37,8 +41,7 @@ to_json(V) -> V.
 
 to_list(Rec) ->
     [Type|Fields] = tuple_to_list(Rec),
-    Info = '#info-'(Type),
-    lists:zip(Info, Fields).
+    lists:zip('#info-'(Type), Fields).
 
 improve(#etelegram_document{thumb=Thumb}=Rec) ->
     Rec#etelegram_document{thumb=parse(etelegram_photo_size, Thumb)};
@@ -80,7 +83,15 @@ improve(#etelegram_message{from=From,
       new_chat_participant=parse(etelegram_user, NewChatParticipant),
       left_chat_participant=parse(etelegram_user, LeftChatParticipant),
       new_chat_photo=parse(etelegram_photo_size, NewChatPhoto)};
-improve(#etelegram_update{message=Message}=Rec) ->
-    Rec#etelegram_update{message=parse(etelegram_message, Message)};
+improve(#etelegram_inline_query{from=From}=Rec) ->
+    Rec#etelegram_inline_query{from=parse(etelegram_user, From)};
+improve(#etelegram_update{message=Message,
+                          inline_query=InlineQuery,
+                          chosen_inline_result=ChosenInlineResult}=Rec) ->
+    Rec#etelegram_update{
+      message=parse(etelegram_message, Message),
+      inline_query=parse(etelegram_inline_query, InlineQuery),
+      chosen_inline_result=parse(etelegram_chosen_inline_result,
+                                 ChosenInlineResult)};
 improve(Rec) ->
     Rec.

@@ -55,7 +55,10 @@ unwrap_result({ok, 200, _, Body}, RecType) ->
         [{ok, true}, {result, Result}] ->
             case RecType of
                 undefined -> ok;
-                _         -> {ok, etelegram_records:parse(RecType, Result)}
+                _ ->
+                    Records = [etelegram_records:parse(RecType, R)
+                               || R <- Result],
+                    {ok, Records}
             end;
         [{ok, true}, {result, true}] ->
             {ok, true}
@@ -88,8 +91,8 @@ method_send_data(_) -> false.
 jsonify_param(K, Params) ->
     case lists:keysearch(K, 1, Params) of
         {value, {_, Value}} ->
-            EncodedValue = jsx:encode(etelegram_records:to_json(Value)),
+            EncodedValue = etelegram_json:encode(
+                             etelegram_records:to_json(Value)),
             lists:keyreplace(K, 1, Params, {K, EncodedValue});
-        false ->
-            Params
+        false -> Params
     end.

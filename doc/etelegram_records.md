@@ -20,7 +20,7 @@
 
 ### parse/2 ###
 
-`parse(Type, List) -> any()`
+`parse(Type, Props) -> any()`
 
 <a name="to_json-1"></a>
 

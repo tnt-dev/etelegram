@@ -23,7 +23,8 @@
          get_user_profile_photos/1, get_user_profile_photos/2,
          get_updates/0, get_updates/1,
          set_webhook/1,
-         get_file/1]).
+         get_file/1,
+         answer_inline_query/2, answer_inline_query/3]).
 
 %% Application callbacks
 -export([start/2, stop/1]).
@@ -474,6 +475,40 @@ get_file(FileId) ->
     Opts = [{file_id, FileId}],
     request(<<"getFile">>, etelegram_file, Opts).
 
+%% @equiv answer_inline_query(InlineQueryId, Results, [])
+answer_inline_query(InlineQueryId, Results) ->
+    answer_inline_query(InlineQueryId, Results, []).
+
+%% @doc Use this method to send answers to an inline query.
+%%
+%% Args:
+%%
+%% - `inline_query_id': Unique identifier for the answered query
+%% - `results': A JSON-serialized array of results for the inline query
+%%
+%% Options:
+%%
+%% - `{cache_time, non_neg_integer()}': The maximum amount of time in seconds
+%% that the result of the inline query may be cached on the server.
+%% Defaults to 300.
+%% - `{is_personal, boolean()}': Pass True, if results may be cached on the
+%% server side only for the user that sent the query. By default, results
+%%  may be returned to any user who sends the same query
+%% - `{next_offset, binary()}': Pass the offset that a client should send in
+%% the next query with the same text to receive more results.
+%% Pass an empty string if there are no more results or if you don‘t support
+%% pagination. Offset length can’t exceed 64 bytes.
+-spec answer_inline_query(InlineQueryId, Results, Opts) -> ok | Error when
+      InlineQueryId :: binary(),
+      Results       :: [inline_query_result()],
+      Opts          :: [{atom(), non_neg_integer() | boolean(), binary()}],
+      Error         :: error().
+answer_inline_query(InlineQueryId, Results, Opts) ->
+    EncodedResults = etelegram_json:encode(
+                       [etelegram_records:to_json(R) || R <- Results]),
+    Opts2 = [{inline_query_id, InlineQueryId},
+             {results, EncodedResults} | Opts],
+    request(<<"answerInlineQuery">>, undefined, Opts2).
 
 request(Method, RecType) ->
     request(Method, RecType, []).
