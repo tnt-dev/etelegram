@@ -11,7 +11,7 @@ An Erlang wrapper around the
 ## Installation
 
 
-Download the sources from [repositary](https://github.com/tnt-dev/etelegram)
+Download the sources from [repository](https://github.com/tnt-dev/etelegram)
 and run `make`.
 
 Or add it to `rebar.config` into a `deps` list
